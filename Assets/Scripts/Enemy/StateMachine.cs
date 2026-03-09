@@ -4,7 +4,6 @@ using System.Collections.Generic;
 public class StateMachine
 {
     private IEnemyState _currentState;
-
     private readonly Dictionary<Type, IEnemyState> _states;
 
     public StateMachine(Enemy enemy, Mover mover, Path path)

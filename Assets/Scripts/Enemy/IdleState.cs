@@ -24,11 +24,6 @@ public class IdleState : IEnemyState
     {
     }
 
-    private void Execute()
-    {
-        _stateMachine.ChangeState(typeof(MoveState));
-    }
-
     public void Exit()
     {
     }
@@ -37,5 +32,10 @@ public class IdleState : IEnemyState
     {
         yield return new WaitForSeconds(_waitingTime);
         Execute();
+    }
+    
+    private void Execute()
+    {
+        _stateMachine.ChangeState(typeof(MoveState));
     }
 }
