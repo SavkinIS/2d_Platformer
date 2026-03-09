@@ -815,7 +815,7 @@ Transform:
   m_GameObject: {fileID: 459350410}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.03, y: 0.13, z: 0}
+  m_LocalPosition: {x: 0.03, y: 0.07, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -883,7 +883,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 72de0c64f2c6a498096698322c976a67, type: 3}
+  m_Sprite: {fileID: -3318188226485093758, guid: ae72133dacba6ec4eb33ecde48f50e56, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -8286,6 +8286,7 @@ GameObject:
   m_Component:
   - component: {fileID: 735369229}
   - component: {fileID: 735369230}
+  - component: {fileID: 735369231}
   m_Layer: 0
   m_Name: GroundCheck
   m_TagString: Untagged
@@ -8360,6 +8361,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &735369231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 735369228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 195d020090994aa4832e5d2fc4eaffd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidbody: {fileID: 1375477683}
+  _groundRadius: 0.2
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &801182486
 GameObject:
   m_ObjectHideFlags: 0
@@ -8890,7 +8908,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05188d74f34b4aa4be27464be2f1dd2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerMovement: {fileID: 1375477682}
 --- !u!4 &1168409064
 Transform:
   m_ObjectHideFlags: 0
@@ -9289,6 +9306,7 @@ GameObject:
   - component: {fileID: 1375477683}
   - component: {fileID: 1375477687}
   - component: {fileID: 1375477688}
+  - component: {fileID: 1375477689}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -9308,16 +9326,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a1c11bde0dad400ab1d404f1861c661, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spriteRenderer: {fileID: 459350413}
   _speed: 5
   _rigidbody: {fileID: 1375477683}
   _jumpForce: 8
-  _groundCheck: {fileID: 735369229}
-  _groundRadius: 1
-  _groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  _playerAnimator: {fileID: 459350414}
 --- !u!50 &1375477683
 Rigidbody2D:
   serializedVersion: 4
@@ -9461,6 +9472,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b510d5c57f1e4b3cb4755f4faaaaf7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1375477689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375477681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b10ca9cdb47a48638fdb72b7e17612cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _physicsMover: {fileID: 1375477682}
+  _collector: {fileID: 1375477688}
+  _playerAnimator: {fileID: 459350414}
+  _groundDetector: {fileID: 735369231}
 --- !u!1 &1385838440
 GameObject:
   m_ObjectHideFlags: 0
@@ -10280,7 +10307,7 @@ MonoBehaviour:
   - {fileID: 352063813}
   - {fileID: 983666834}
   _gemPrefab: {fileID: 7696969087401976646, guid: 69e78488d2e4c4c279fae62dd4790c5a, type: 3}
-  _gemCollector: {fileID: 1375477688}
+  collector: {fileID: 1375477688}
 --- !u!4 &1768232077
 Transform:
   m_ObjectHideFlags: 0

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GemSpawner : MonoBehaviour
 {
     [SerializeField] private List<Transform> _gemSpawnPoint;
     [SerializeField] private Gem _gemPrefab;
+    [SerializeField] private Collector collector;
 
     private List<Gem> _gems = new List<Gem>();
 
@@ -16,7 +18,6 @@ public class GemSpawner : MonoBehaviour
             var spawnPoint = _gemSpawnPoint[index];
             var gem = Instantiate(_gemPrefab, transform);
             gem.transform.position = spawnPoint.position;
-            gem.TriggerEntered += GemHited;
             gem.gameObject.name = $"Gem {index + 1}";
             _gems.Add(gem);
         }
@@ -24,17 +25,17 @@ public class GemSpawner : MonoBehaviour
 
     private void OnEnable()
     {
-        foreach (var gem in _gems)
-            gem.TriggerEntered += GemHited;
+        collector.GemColleted += Destroy;
     }
+
 
     private void OnDisable()
     {
-        foreach (var gem in _gems)
-            gem.TriggerEntered -= GemHited;
+        collector.GemColleted -= Destroy;
     }
 
 #if UNITY_EDITOR
+
     private void OnValidate()
     {
         string pointNameTemplete = "Point ";
@@ -49,15 +50,11 @@ public class GemSpawner : MonoBehaviour
             }
         }
     }
+
 #endif
 
-
-    private void GemHited(Collider2D collider, Gem gem)
+    private void Destroy(Gem gem)
     {
-        if (collider.TryGetComponent(out GemCollector gemCollector))
-        {
-            gemCollector.Collect(gem);
-            Destroy(gem.gameObject);
-        }
+        Destroy(gem.gameObject);
     }
 }

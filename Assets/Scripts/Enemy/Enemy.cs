@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -8,7 +10,14 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _waitingTime = 2;
 
     private StateMachine _stateMachine;
-    public float WaitngTime => _waitingTime;
+    private Rotator _rotator;
+    
+    public float WaitingTime => _waitingTime;
+
+    private void Awake()
+    {
+        _rotator = new Rotator(transform);
+    }
 
     private void Start()
     {
@@ -18,6 +27,16 @@ public class Enemy : MonoBehaviour
     private void Update()
     {
         _stateMachine.Tick();
+    }
+
+    private void OnEnable()
+    {
+        _mover.DirectionChanged += _rotator.Rotate;
+    }
+
+    private void OnDisable()
+    {
+        _mover.DirectionChanged -= _rotator.Rotate;
     }
 
     public void PlayIdle()

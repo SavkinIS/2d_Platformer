@@ -4,7 +4,7 @@ public class EnemyAnimator : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
 
-    private static readonly int MoveHash = Animator.StringToHash("Move");
+    private readonly int MoveHash = Animator.StringToHash("Move");
 
     public void PlayMove(bool state)
     {
