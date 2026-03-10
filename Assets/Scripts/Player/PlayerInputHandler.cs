@@ -2,13 +2,13 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInputHandler : IDisposable
+public class PlayerInputConnector : IDisposable
 {
     private PhysicsMover _physicsMover;
     private PlayerInput _playerInput;
     private readonly Rotator _rotator;
 
-    public PlayerInputHandler(PhysicsMover physicsMover, Transform transform)
+    public PlayerInputConnector(PhysicsMover physicsMover, Transform transform)
     {
         _physicsMover = physicsMover;
         _playerInput = new PlayerInput();
@@ -22,7 +22,6 @@ public class PlayerInputHandler : IDisposable
         _playerInput.Player.Move.canceled += _physicsMover.MoveDirection;
 
         _playerInput.Player.Move.performed += Rotate;
-        _playerInput.Player.Move.canceled += ResetRotete;
 
         _playerInput.Player.Jump.performed += _physicsMover.Jump;
     }
@@ -33,7 +32,6 @@ public class PlayerInputHandler : IDisposable
         _playerInput.Player.Move.canceled -= _physicsMover.MoveDirection;
         
         _playerInput.Player.Move.performed -= Rotate;
-        _playerInput.Player.Move.canceled -= ResetRotete;
         
         _playerInput.Player.Jump.performed -= _physicsMover.Jump;
         
@@ -45,11 +43,6 @@ public class PlayerInputHandler : IDisposable
         _rotator.Rotate(performed.ReadValue<Vector2>());
     }
 
-    private void ResetRotete(InputAction.CallbackContext performed)
-    {
-        _rotator.ResetRotation();
-    }
-    
     public void Dispose()
     {
         UnSubscribe();

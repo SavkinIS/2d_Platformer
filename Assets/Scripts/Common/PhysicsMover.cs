@@ -8,8 +8,7 @@ public class PhysicsMover : MonoBehaviour
     [SerializeField] private float _jumpForce = 10f;
     
     private GroundDetector _groundDetector;
-    private bool _jumping;
-    private float _verticalChecker;
+    private bool _isJumpPressed;
 
     public Vector2 Direction { get; private set; }
 
@@ -18,6 +17,11 @@ public class PhysicsMover : MonoBehaviour
         _rigidbody.velocity = new Vector2(
             Direction.x * _speed,
             _rigidbody.velocity.y);
+
+        if (_isJumpPressed && _rigidbody.velocity.y <= 0)
+        {
+            _isJumpPressed = false;
+        }
     }
 
     public void MoveDirection(InputAction.CallbackContext inputDirection)
@@ -39,19 +43,11 @@ public class PhysicsMover : MonoBehaviour
             Vector2.up * _jumpForce,
             ForceMode2D.Impulse);
 
-        _jumping = true;
-        _verticalChecker = 0;
+        _isJumpPressed = true;
     }
 
     public bool IsJumping()
-    {
-        var verticalCurrentValue = _verticalChecker + _rigidbody.velocity.y;
-
-        _jumping = verticalCurrentValue > _verticalChecker;
-        _verticalChecker = verticalCurrentValue;
-
-        return _jumping;
-    }
+        => _rigidbody.velocity.y > 0 && _isJumpPressed;
     
     public void SetGroundDetector(GroundDetector groundDetector)
     {

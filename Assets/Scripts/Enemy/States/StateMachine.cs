@@ -6,12 +6,12 @@ public class StateMachine
     private IEnemyState _currentState;
     private readonly Dictionary<Type, IEnemyState> _states;
 
-    public StateMachine(Enemy enemy, Mover mover, Path path)
+    public StateMachine(Enemy enemy, EnemyAnimator enemyAnimator, TargetMover targetMover, Path path)
     {
         _states = new Dictionary<Type, IEnemyState>()
         {
-            { typeof(IdleState), new IdleState(enemy, this) },
-            { typeof(MoveState), new MoveState(enemy, this, mover, path) }
+            { typeof(IdleState), new IdleState(enemy, this, enemyAnimator) },
+            { typeof(MoveState), new MoveState(enemyAnimator, this, targetMover, path) }
         };
     }
 
@@ -23,10 +23,5 @@ public class StateMachine
             _currentState = nextState;
             _currentState?.Enter();
         }
-    }
-
-    public void Tick()
-    {
-        _currentState.Tick();
     }
 }

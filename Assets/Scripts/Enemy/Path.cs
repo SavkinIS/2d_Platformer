@@ -8,12 +8,6 @@ public class Path : MonoBehaviour
     private int _currentPathPoint = 0;
     private bool _isForwardDirection = true;
 
-    private void Awake()
-    {
-        foreach (Transform point in _points)
-            point.gameObject.SetActive(false);
-    }
-
     public Transform GetPoint()
     {
         return _points[_currentPathPoint];

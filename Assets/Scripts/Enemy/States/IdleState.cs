@@ -6,26 +6,25 @@ public class IdleState : IEnemyState
     private Enemy _enemy;
     private StateMachine _stateMachine;
     private readonly float _waitingTime;
+    private readonly EnemyAnimator _enemyAnimator;
 
-    public IdleState(Enemy enemy, StateMachine stateMachine)
+    public IdleState(Enemy enemy, StateMachine stateMachine, EnemyAnimator enemyAnimator)
     {
         _enemy = enemy;
         _stateMachine = stateMachine;
         _waitingTime = _enemy.WaitingTime;
+        _enemyAnimator = enemyAnimator;
     }
 
     public void Enter()
     {
-        _enemy.PlayIdle();
+        _enemyAnimator.PlayIdle();
         _enemy.StartCoroutine(WaitCoroutine());
-    }
-
-    public void Tick()
-    {
     }
 
     public void Exit()
     {
+        
     }
 
     private IEnumerator WaitCoroutine()

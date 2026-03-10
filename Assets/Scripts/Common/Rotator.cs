@@ -5,10 +5,14 @@ public class Rotator
     private float _rotateY = 180;
     private bool _isRoteted;
     private Transform _transform;
+    private readonly Quaternion _leftAngles;
+    private readonly Quaternion _rightAngles;
 
     public Rotator(Transform transform)
     {
         _transform = transform;
+        _leftAngles = Quaternion.Euler(Vector3.up * _rotateY);
+        _rightAngles = Quaternion.Euler(Vector3.up * 0);
     }
 
     public void Rotate(Vector2 direction)
@@ -18,12 +22,7 @@ public class Rotator
 
         if (_isRoteted)
         {
-            _transform.rotation = Quaternion.Euler(Vector3.up * (direction.x < 0 ? _rotateY : 0));
+            _transform.rotation = direction.x < 0 ? _leftAngles : _rightAngles;
         }
-    }
-
-    public void ResetRotation()
-    {
-        _isRoteted = false;
     }
 }

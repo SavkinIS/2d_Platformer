@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private Mover _mover;
+    [SerializeField] private TargetMover _targetMover;
     [SerializeField] private EnemyAnimator _animator;
     [SerializeField] private float _waitingTime = 2;
 
@@ -21,33 +21,18 @@ public class Enemy : MonoBehaviour
         _stateMachine.ChangeState(typeof(IdleState));
     }
 
-    private void Update()
-    {
-        _stateMachine.Tick();
-    }
-
     private void OnEnable()
     {
-        _mover.DirectionChanged += _rotator.Rotate;
+        _targetMover.DirectionChanged += _rotator.Rotate;
     }
 
     private void OnDisable()
     {
-        _mover.DirectionChanged -= _rotator.Rotate;
-    }
-
-    public void PlayIdle()
-    {
-        _animator.PlayIdle();
-    }
-
-    public void PlayMoveAnimation()
-    {
-        _animator.PlayMove(true);
+        _targetMover.DirectionChanged -= _rotator.Rotate;
     }
 
     public void Initialize(Path path)
     {
-        _stateMachine = new StateMachine(this,  _mover, path);
+        _stateMachine = new StateMachine(this, _animator, _targetMover, path);
     }
 }

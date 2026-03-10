@@ -16,5 +16,6 @@ public class Collector : MonoBehaviour
     private void Collect(Gem gem)
     {
         GemColleted?.Invoke(gem);
+        gem.Collect();
     }
 }

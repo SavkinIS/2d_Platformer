@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Mover : MonoBehaviour
+public class TargetMover : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 2f;
     [SerializeField] private float _arrivalThreshold = 0.25f;
@@ -12,12 +12,15 @@ public class Mover : MonoBehaviour
 
     public event Action<Vector2> DirectionChanged;
     
+    public event Action DestinationReached;
+    
     public bool IsDestinationReached { get; private set; }
     
     private bool HasTarget => _target != null;
 
-    private bool IsCanMove => HasTarget && !IsDestinationReached && _target != null;
-    
+    private bool IsCanMove => HasTarget && !IsDestinationReached;
+
+
     private void Awake()
     {
         IsDestinationReached = true;
@@ -36,6 +39,9 @@ public class Mover : MonoBehaviour
     {
         _target = target;
         IsDestinationReached = target == null;
+        
+        if (IsDestinationReached)
+            DestinationReached?.Invoke();
     }
 
     private void Move()
@@ -50,7 +56,7 @@ public class Mover : MonoBehaviour
 
         if (distance < _arrivalThresholdSqr)
         {
-            CompleteMovement();
+            SetTarget(null);
             return;
         }
         
@@ -62,17 +68,5 @@ public class Mover : MonoBehaviour
         }
         
         transform.position = newPos;
-    }
-
-    private void CompleteMovement()
-    {
-        if (_target != null)
-        {
-            Vector3 finalPos = _target.position;
-            finalPos.y = transform.position.y;
-            transform.position = finalPos;
-        }
-
-        SetTarget(null);
     }
 }

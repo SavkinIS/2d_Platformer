@@ -5,7 +5,6 @@ public class GemSpawner : MonoBehaviour
 {
     [SerializeField] private List<Transform> _gemSpawnPoint;
     [SerializeField] private Gem _gemPrefab;
-    [SerializeField] private Collector collector;
 
     private List<Gem> _gems = new List<Gem>();
 
@@ -17,19 +16,28 @@ public class GemSpawner : MonoBehaviour
             var gem = Instantiate(_gemPrefab, transform);
             gem.transform.position = spawnPoint.position;
             gem.gameObject.name = $"Gem {index + 1}";
+            gem.GemCollected += GemCollect;
             _gems.Add(gem);
         }
     }
 
     private void OnEnable()
     {
-        collector.GemColleted += Destroy;
+        if (_gems.Count > 0)
+        {
+            foreach (var gem in _gems)
+                gem.GemCollected += GemCollect;
+        }
     }
 
 
     private void OnDisable()
     {
-        collector.GemColleted -= Destroy;
+        if (_gems.Count > 0)
+        {
+            foreach (var gem in _gems)
+                gem.GemCollected -= GemCollect;
+        }
     }
 
 #if UNITY_EDITOR
@@ -54,5 +62,12 @@ public class GemSpawner : MonoBehaviour
     private void Destroy(Gem gem)
     {
         Destroy(gem.gameObject);
+    }
+
+    private void GemCollect(Gem gem)
+    {
+        gem.GemCollected -= GemCollect;
+        _gems.Remove(gem);
+        Destroy(gem);
     }
 }
