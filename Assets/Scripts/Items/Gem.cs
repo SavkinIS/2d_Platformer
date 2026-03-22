@@ -1,12 +1,3 @@
-using System;
-using UnityEngine;
-
-public class Gem : MonoBehaviour
+public class Gem : CollectionItem
 {
-    public event Action<Gem> GemCollected;
-
-    public void Collect()
-    {
-        GemCollected?.Invoke(this);
-    }
 }

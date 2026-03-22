@@ -4,12 +4,14 @@ using UnityEngine;
 public class TargetMover : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 2f;
+    [SerializeField] private float _runSpeed = 4f;
     [SerializeField] private float _arrivalThreshold = 0.25f;
 
     private Transform _target;
     private Rotator _rotator;
     private float _arrivalThresholdSqr;
-
+    private float _currentSpeed;    
+    
     public event Action<Vector2> DirectionChanged;
     
     public event Action DestinationReached;
@@ -25,14 +27,25 @@ public class TargetMover : MonoBehaviour
     {
         IsDestinationReached = true;
         _arrivalThresholdSqr = _arrivalThreshold * _arrivalThreshold;
+        _currentSpeed = _moveSpeed;
     }
 
-    private void Update()
+    public void Move()
     {
         if (IsCanMove)
         {
-            Move();
+            MoveImplementation();
         }
+    }
+
+    public void EnableRun()
+    {
+        _currentSpeed =  _runSpeed;
+    }
+
+    public void DisableRun()
+    {
+        _currentSpeed = _moveSpeed;
     }
 
     public void SetTarget(Transform target)
@@ -43,13 +56,18 @@ public class TargetMover : MonoBehaviour
         if (IsDestinationReached)
             DestinationReached?.Invoke();
     }
+    
+    public void Stop()
+    {
+       SetTarget(null);
+    }
 
-    private void Move()
+    private void MoveImplementation()
     {
         Vector3 targetPosition = _target.position;
         targetPosition.y = transform.position.y;
 
-        float step = _moveSpeed * Time.deltaTime;
+        float step = _currentSpeed * Time.deltaTime;
         Vector3 newPos = Vector3.MoveTowards(transform.position, targetPosition, step);
 
         var distance = (transform.position - _target.position).sqrMagnitude;

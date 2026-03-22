@@ -1,11 +1,13 @@
+using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PhysicsMover : MonoBehaviour
 {
     [SerializeField] private float _speed;
     [SerializeField] private Rigidbody2D _rigidbody;
     [SerializeField] private float _jumpForce = 10f;
+    
+    public event Action JumpEnded;
     
     private GroundDetector _groundDetector;
     private bool _isJumpPressed;
@@ -21,18 +23,18 @@ public class PhysicsMover : MonoBehaviour
         if (_isJumpPressed && _rigidbody.velocity.y <= 0)
         {
             _isJumpPressed = false;
+            JumpEnded?.Invoke();
         }
     }
 
-    public void MoveDirection(InputAction.CallbackContext inputDirection)
+    public void MoveDirection(Vector2 direction)
     {
-        var direction = inputDirection.ReadValue<Vector2>();
         Direction = new Vector2(direction.x, 0f);
     }
 
-    public void Jump(InputAction.CallbackContext context)
+    public void Jump()
     {
-        if (context.performed == false || _groundDetector.IsGrounded == false)
+        if (_groundDetector.IsGrounded == false)
             return;
 
         _rigidbody.velocity = new Vector2(

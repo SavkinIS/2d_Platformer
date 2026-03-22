@@ -3,7 +3,6 @@ using UnityEngine;
 public class Rotator
 {
     private float _rotateY = 180;
-    private bool _isRoteted;
     private Transform _transform;
     private readonly Quaternion _leftAngles;
     private readonly Quaternion _rightAngles;
@@ -17,12 +16,9 @@ public class Rotator
 
     public void Rotate(Vector2 direction)
     {
-        if (_isRoteted == false)
-            _isRoteted = true;
-
-        if (_isRoteted)
-        {
-            _transform.rotation = direction.x < 0 ? _leftAngles : _rightAngles;
-        }
+        if (Vector2.zero == direction || Mathf.Approximately(direction.x, Vector2.zero.x))
+            return; 
+                
+        _transform.rotation = direction.x < 0 ? _leftAngles : _rightAngles;
     }
 }

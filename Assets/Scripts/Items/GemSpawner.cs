@@ -16,7 +16,7 @@ public class GemSpawner : MonoBehaviour
             var gem = Instantiate(_gemPrefab, transform);
             gem.transform.position = spawnPoint.position;
             gem.gameObject.name = $"Gem {index + 1}";
-            gem.GemCollected += GemCollect;
+            gem.Collected += Collect;
             _gems.Add(gem);
         }
     }
@@ -26,7 +26,7 @@ public class GemSpawner : MonoBehaviour
         if (_gems.Count > 0)
         {
             foreach (var gem in _gems)
-                gem.GemCollected += GemCollect;
+                gem.Collected += Collect;
         }
     }
 
@@ -36,7 +36,7 @@ public class GemSpawner : MonoBehaviour
         if (_gems.Count > 0)
         {
             foreach (var gem in _gems)
-                gem.GemCollected -= GemCollect;
+                gem.Collected -= Collect;
         }
     }
 
@@ -64,10 +64,13 @@ public class GemSpawner : MonoBehaviour
         Destroy(gem.gameObject);
     }
 
-    private void GemCollect(Gem gem)
+    private void Collect(CollectionItem collectionItem)
     {
-        gem.GemCollected -= GemCollect;
-        _gems.Remove(gem);
-        Destroy(gem);
+        if (collectionItem is Gem gem)
+        {
+            gem.Collected -= Collect;
+            _gems.Remove(gem);
+            Destroy(gem);
+        }
     }
 }

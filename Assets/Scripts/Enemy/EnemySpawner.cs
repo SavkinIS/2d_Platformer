@@ -12,5 +12,13 @@ public class EnemySpawner : MonoBehaviour
         
         enemy.transform.position = _spawnPoint.position;
         enemy.Initialize(_path);
+
+        enemy.CalledDead += CallEnemyDead;
+    }
+
+    private void CallEnemyDead(GameObject obj)
+    {
+        obj.SetActive(false);
+        Destroy(obj);
     }
 }
