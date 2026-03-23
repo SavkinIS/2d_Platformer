@@ -34,11 +34,6 @@ public class Enemy : MonoBehaviour
         _enemyStateMachine.ChangeState(typeof(EnemyIdleState));
     }
 
-    private void Update()
-    {
-        Debug.Log(_enemyStateMachine.CurrentState);
-    }
-
     private void OnEnable()
     {
         _playerDetector.OnPlayerEnter += PLayerInChaseZoneEntered;

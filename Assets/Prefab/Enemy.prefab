@@ -291,7 +291,7 @@ MonoBehaviour:
   _health: {fileID: 2355042586291570385}
   _waitingTime: 2.5
   _attackWaitingTime: 1
-  _playerAttackDistance: 0
+  _playerAttackDistance: 2
   _playerDetector: {fileID: 44384218357252539}
   _attacker: {fileID: 4357497825730027482}
 --- !u!114 &2177057899895497370
