@@ -27,16 +27,13 @@ public class PlayerDetector : MonoBehaviour
 
     protected virtual void PlayerEnter(Collider2D other)
     {
-        if (other.CompareTag(PlayerTag))
+        if (other.TryGetComponent<Player>(out var player))
         {
             Physics2D.IgnoreCollision(
                 other,
                 GetComponent<Collider2D>()
             );
-        }
-
-        if (other.TryGetComponent<Player>(out var player))
-        {
+            
             _player = player;
             IsPlayerInAria = true;
 
