@@ -10740,6 +10740,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _physicsMover: {fileID: 1375477682}
   _collector: {fileID: 1375477688}
+  _playerAnimator: {fileID: 459350414}
   _groundDetector: {fileID: 735369231}
   _health: {fileID: 1375477691}
   _attacker: {fileID: 1680723426}
