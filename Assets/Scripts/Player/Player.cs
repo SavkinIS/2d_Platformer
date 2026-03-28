@@ -1,20 +1,23 @@
 using System;
-using PlayerSystem;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private PhysicsMover _physicsMover;
     [SerializeField] private Collector _collector;
-    [SerializeField] private PlayerAnimator _playerAnimator;
+    [SerializeField] private PlayerAnimatorBase _playerAnimator;
     [SerializeField] private GroundDetector _groundDetector;
     [SerializeField] private Health _health;
     [SerializeField] private Attacker _attacker;
 
-    private PlayerInputConnector _inputConnector;
+    private PLayerInputHandler _inputHandler;
     private Wallet _wallet;
     private PlayerInputBuffer _inputBuffer;
-    private PlayerStateMachine _stateMachine;
+    private PlayerState _playerState;
+
+    private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _allBlockState = (false, false, false);
+    private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _idleState = (true, true, true);
+    private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _jumpsState = (true, true, false);
 
     public bool IsAlive => _health.IsAlive;
     public event Action<float, float> HealthChanged;
@@ -22,13 +25,12 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
+        _playerState = new PlayerState();
+        _physicsMover.SetPlayerState(_playerState);
         _wallet = new Wallet();
         _inputBuffer = new PlayerInputBuffer();
-        _inputConnector = new PlayerInputConnector(_inputBuffer, transform);
+        _inputHandler = new PLayerInputHandler(_physicsMover, this);
         _physicsMover.SetGroundDetector(_groundDetector);
-
-        _stateMachine = new PlayerStateMachine(_playerAnimator, _physicsMover, _inputBuffer, _attacker);
-        _stateMachine.ChangeState(typeof(PlayerIdleState));
     }
 
     private void Start()
@@ -38,116 +40,89 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        ProcessInput();
+        var direction = _physicsMover.Direction;
+        var jumping = _physicsMover.IsJumping();
 
-        _stateMachine.Update();
+        if (jumping  && _playerState.IsCanJump)
+        {
+            _playerAnimator.Jump(jumping);
+            _playerState.SetState(_jumpsState);
+        }
+
+        if (jumping == false && _groundDetector.IsGrounded == false)
+        {   
+            _playerAnimator.Fall(_groundDetector.IsGrounded == false);
+            _playerState.SetState(_jumpsState);
+        }
+
+        if (!jumping && _groundDetector.IsGrounded && _playerState.IsCanMove)
+        {
+            _playerState.SetState(_idleState);
+            _playerAnimator.Run(Mathf.Abs(direction.x) > 0.1f);
+        }
     }
 
     private void OnEnable()
     {
-        _inputConnector.Enable();
+        _inputHandler.Subscribe();
         _collector.GemColleted += _wallet.IncrementGemCount;
         _collector.AidKitColleted += _health.AidKitCollected;
         _health.Dead += ToDie;
         _health.Hurted += Hurted;
         _health.HealthRestored += HealthRestored;
+        _playerAnimator.AttackDealDamage += _attacker.DealDamage;
+        _playerAnimator.AttackEnded += AttackEnded;
+        _playerAnimator.HurtAnimationEnded += HurtEnded;
+    }
+
+    private void AttackEnded()
+    {
+        _playerState.SetState(_idleState);
     }
 
     private void OnDisable()
     {
-        _inputConnector.Disable();
+        _inputHandler.UnSubscribe();
         _collector.GemColleted -= _wallet.IncrementGemCount;
+        _collector.AidKitColleted -= _health.AidKitCollected;
         _health.Dead -= ToDie;
+        _health.Hurted -= Hurted;
         _health.HealthRestored -= HealthRestored;
+        _playerAnimator.AttackDealDamage += _attacker.DealDamage;
     }
 
-    private void ProcessInput()
+    public void Attack()
     {
-        HandleMove();
-        HandleFall();
-        HandleJump();
-
-        HandleAttack();
-    }
-
-    private void HandleFall()
-    {
-        var jumping = _physicsMover.IsJumping();
-
-        if (jumping == false && _groundDetector.IsGrounded == false)
-        {
-            if (_stateMachine.CurrentState is not PlayerFallState)
-            {
-                _stateMachine.ChangeState(typeof(PlayerFallState));
-            }
-        }
-        else if (_stateMachine.CurrentState is PlayerFallState && _groundDetector.IsGrounded)
-        {
-            _stateMachine.ChangeState(typeof(PlayerIdleState));
-        }
-    }
-
-    private void HandleMove()
-    {
-        if (_stateMachine.CurrentState.CanMove)
-            _physicsMover.MoveDirection(_inputBuffer.MoveInput);
-
-        if (_stateMachine.IsCurrentStateCanMove && _groundDetector.IsGrounded)
-        {
-            if (_inputBuffer.MoveInput == Vector2.zero)
-            {
-                if (_stateMachine.CurrentState is PlayerMovementState)
-                {
-                    _stateMachine.ChangeState(typeof(PlayerIdleState));
-                }
-
-                return;
-            }
-
-            if (_stateMachine.CurrentState is PlayerIdleState)
-            {
-                _stateMachine.ChangeState(typeof(PlayerMovementState));
-            }
-        }
-    }
-
-    private void HandleJump()
-    {
-        if (_stateMachine.IsCurrentStateCanJump && _inputBuffer.Jump.TryConsume() && _groundDetector.IsGrounded)
-        {
-            _stateMachine.ChangeState(typeof(PlayerJumpState));
-        }
-
-        if (_stateMachine.CurrentState is PlayerJumpState && _physicsMover.IsJumping() == false &&
-            _groundDetector.IsGrounded)
-        {
-            _stateMachine.ChangeState(typeof(PlayerIdleState));
-        }
-    }
-
-    private void HandleAttack()
-    {
-        if (_stateMachine.IsCurrentStateCanAttack && _inputBuffer.Attack.TryConsume())
-        {
-            _stateMachine.ChangeState(typeof(PlayerAttackState));
-        }
+        if (_playerState.IsCanAttack == false)
+            return;
+        
+        _playerAnimator.Attack();
+        _playerState.SetState(_allBlockState);
     }
 
     private void ToDie()
     {
+        _playerState.SetState(_allBlockState);
         _playerAnimator.Dead();
-        _inputConnector.Disable();
+        _inputHandler.Dispose();
         Dead?.Invoke();
     }
 
     private void Hurted()
     {
+        _playerState.SetState(_allBlockState);
         _playerAnimator.Hurt();
         HealthChanged?.Invoke(_health.CurrentHealth, _health.MaxHealth);
     }
 
     private void HealthRestored()
     {
+        _playerState.SetState(_allBlockState);
         HealthChanged?.Invoke(_health.CurrentHealth, _health.MaxHealth);
+    }
+    
+    private void HurtEnded()
+    {
+        _playerState.SetState(_idleState);
     }
 }
