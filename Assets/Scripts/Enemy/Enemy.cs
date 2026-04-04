@@ -12,26 +12,28 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _playerAttackDistance = 2f;
     [SerializeField] private PlayerDetector _playerDetector;
     [SerializeField] private Attacker _attacker;
-
+    [SerializeField] private Transform _rotateTransform;
+    [SerializeField] private HealthViewBase _healthBar;
+    
     private EnemyStateMachine _enemyStateMachine;
     private Rotator _rotator;
     private Player _player;
 
     public float WaitingTime => _waitingTime;
     public float AttackWaiting => _attackWaitingTime;
-    public float PlayerAttackDistance => _playerAttackDistance;
     public Player Player => _player;
 
     public event Action<GameObject> CalledDead;
 
     private void Awake()
     {
-        _rotator = new Rotator(transform);
+        _rotator = new Rotator(_rotateTransform);
     }
 
     private void Start()
     {
         _enemyStateMachine.ChangeState(typeof(EnemyIdleState));
+        _health.Refresh();
     }
 
     private void OnEnable()
@@ -41,6 +43,7 @@ public class Enemy : MonoBehaviour
         _targetMover.DirectionChanged += _rotator.Rotate;
         _health.Hurted += TakeDamage;
         _health.Dead += ToDie;
+        _health.Changed += _healthBar.HealthChangedInternal;
     }
 
     private void OnDisable()
@@ -49,6 +52,7 @@ public class Enemy : MonoBehaviour
         _playerDetector.Unsubscribe();
         _targetMover.DirectionChanged -= _rotator.Rotate;
         _health.Hurted -= TakeDamage;
+        _health.Changed -= _healthBar.HealthChangedInternal;
     }
     
     public void Initialize(Path path)

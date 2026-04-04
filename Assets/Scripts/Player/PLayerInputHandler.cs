@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 public class PLayerInputHandler : IDisposable
 {
     private PhysicsMover _physicsMover;
@@ -8,11 +9,11 @@ public class PLayerInputHandler : IDisposable
     private readonly Rotator _rotator;
     private readonly Player _player;
 
-    public PLayerInputHandler(PhysicsMover physicsMover, Player player)
+    public PLayerInputHandler(PhysicsMover physicsMover, Player player, Transform rotateTransform)
     {
         _physicsMover = physicsMover;
         _playerInput = new PlayerInput();
-        _rotator = new Rotator(player.transform);
+        _rotator = new Rotator(rotateTransform);
         _player = player;
     }
 
@@ -33,27 +34,26 @@ public class PLayerInputHandler : IDisposable
     {
         _playerInput.Player.Move.performed -= Move;
         _playerInput.Player.Move.canceled -= Move;
-        
+
         _playerInput.Player.Move.performed -= Rotate;
-        
+
         _playerInput.Player.Jump.performed -= Jump;
-        
+
         _playerInput.Player.Attack_1.performed -= Attack;
-        
+
         _playerInput.Disable();
     }
-    
+
     private void Attack(InputAction.CallbackContext obj)
     {
         _player.Attack();
     }
 
-    
     private void Jump(InputAction.CallbackContext context)
     {
         _physicsMover.Jump();
     }
-    
+
     private void Move(InputAction.CallbackContext performed)
     {
         if (performed.canceled)
@@ -61,7 +61,7 @@ public class PLayerInputHandler : IDisposable
         else
             _physicsMover.MoveDirection(performed.ReadValue<Vector2>());
     }
-    
+
     private void Rotate(InputAction.CallbackContext performed)
     {
         _rotator.Rotate(performed.ReadValue<Vector2>());

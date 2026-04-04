@@ -9,10 +9,11 @@ public class Player : MonoBehaviour
     [SerializeField] private GroundDetector _groundDetector;
     [SerializeField] private Health _health;
     [SerializeField] private Attacker _attacker;
+    [SerializeField] private Transform _rotateTransform;
+    [SerializeField] private HealthViewBase _healthBar;
 
     private PLayerInputHandler _inputHandler;
     private Wallet _wallet;
-    private PlayerInputBuffer _inputBuffer;
     private PlayerState _playerState;
 
     private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _allBlockState = (false, false, false);
@@ -20,7 +21,6 @@ public class Player : MonoBehaviour
     private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _jumpsState = (true, true, false);
 
     public bool IsAlive => _health.IsAlive;
-    public event Action<float, float> HealthChanged;
     public event Action Dead;
 
     private void Awake()
@@ -28,14 +28,13 @@ public class Player : MonoBehaviour
         _playerState = new PlayerState();
         _physicsMover.SetPlayerState(_playerState);
         _wallet = new Wallet();
-        _inputBuffer = new PlayerInputBuffer();
-        _inputHandler = new PLayerInputHandler(_physicsMover, this);
+        _inputHandler = new PLayerInputHandler(_physicsMover, this, _rotateTransform);
         _physicsMover.SetGroundDetector(_groundDetector);
     }
 
     private void Start()
     {
-        HealthChanged?.Invoke(_health.CurrentHealth, _health.MaxHealth);
+        _health.Refresh();
     }
 
     private void Update()
@@ -70,6 +69,7 @@ public class Player : MonoBehaviour
         _health.Dead += ToDie;
         _health.Hurted += Hurted;
         _health.HealthRestored += HealthRestored;
+        _health.Changed += _healthBar.HealthChangedInternal;
         _playerAnimator.AttackDealDamage += _attacker.DealDamage;
         _playerAnimator.AttackEnded += AttackEnded;
         _playerAnimator.HurtAnimationEnded += HurtEnded;
@@ -88,6 +88,7 @@ public class Player : MonoBehaviour
         _health.Dead -= ToDie;
         _health.Hurted -= Hurted;
         _health.HealthRestored -= HealthRestored;
+        _health.Changed -= _healthBar.HealthChangedInternal;
         _playerAnimator.AttackDealDamage += _attacker.DealDamage;
     }
 
@@ -112,13 +113,11 @@ public class Player : MonoBehaviour
     {
         _playerState.SetState(_allBlockState);
         _playerAnimator.Hurt();
-        HealthChanged?.Invoke(_health.CurrentHealth, _health.MaxHealth);
     }
 
     private void HealthRestored()
     {
         _playerState.SetState(_allBlockState);
-        HealthChanged?.Invoke(_health.CurrentHealth, _health.MaxHealth);
     }
     
     private void HurtEnded()

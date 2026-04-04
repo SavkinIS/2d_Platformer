@@ -28,7 +28,7 @@ namespace EnemySystem
 
         private void HurtAnimationEnded()
         {
-            if (_health.CurrentHealth > 0)
+            if (_health.Current > 0)
             {
                 if (_enemy.IsTargetInAttackRange())
                 {
