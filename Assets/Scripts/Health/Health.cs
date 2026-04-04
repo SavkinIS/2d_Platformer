@@ -30,11 +30,6 @@ public class Health : MonoBehaviour, IDamageable, IHealable, IHealth
         if (damage < 0)
             return;
 
-        _current -= damage;
-
-        if (damage < 0)
-            return;
-
         float previous = _current;
         _current = Math.Clamp(_current - damage, _min, _max);
         Refresh(previous - _current);

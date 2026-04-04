@@ -28,7 +28,6 @@ public class HealthSmoothBarView : HealthBarView
                 _speed * Time.deltaTime
             );
 
-            Debug.Log(Slider.value);
             yield return null;
         }
 
