@@ -40,13 +40,13 @@ public class Vampirism : MonoBehaviour
     private void OnEnable()
     {
         _detector.TriggerEntered += AddTarget;
-        _detector.TriggerEntered += RemoveTarget;
+        _detector.TriggerExited += RemoveTarget;
     }
 
     private void OnDisable()
     {
         _detector.TriggerEntered -= AddTarget;
-        _detector.TriggerEntered -= RemoveTarget;
+        _detector.TriggerExited -= RemoveTarget;
     }
 
     public void SetHealable(IHealable healable)
