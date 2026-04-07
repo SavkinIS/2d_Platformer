@@ -4,10 +4,10 @@ using UnityEngine.Serialization;
 
 public class Health : MonoBehaviour, IDamageable, IHealable, IHealth
 {
-    [SerializeField] private float _max = 100f; 
-    
+    [SerializeField] private float _max = 100f;
+
     private readonly float _min = 0f;
-    
+
     private float _current;
 
     public event Action Dead;
@@ -19,7 +19,7 @@ public class Health : MonoBehaviour, IDamageable, IHealable, IHealth
     public bool IsAlive => _current > 0;
 
     public float Max => _max;
-    
+
     public Transform Transform => transform;
 
     private void Awake()
@@ -27,7 +27,7 @@ public class Health : MonoBehaviour, IDamageable, IHealable, IHealth
         _current = _max;
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, bool withAnimation = true)
     {
         if (damage < 0)
             return;
@@ -35,14 +35,15 @@ public class Health : MonoBehaviour, IDamageable, IHealable, IHealth
         float previous = _current;
         _current = Math.Clamp(_current - damage, _min, _max);
         Refresh(previous - _current);
-        
+
         if (_current <= 0)
         {
             Die();
         }
         else
         {
-            Hurt();
+            if (withAnimation)
+                Hurt();
         }
     }
 

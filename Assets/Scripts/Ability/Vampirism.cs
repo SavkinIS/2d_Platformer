@@ -13,6 +13,7 @@ public enum AbilityState
 public class Vampirism : MonoBehaviour
 {
     private const int SecondStep = 1;
+    private const int HalfReduce = 2;
 
     [SerializeField] private float _damagePerSecond = 2f;
     [SerializeField] private TriggerDetector _detector;
@@ -122,7 +123,7 @@ public class Vampirism : MonoBehaviour
     {
         if (_target != null)
         {
-            _target.TakeDamage(_damagePerSecond);
+            _target.TakeDamage(_damagePerSecond, false);
             _healable.Heal(_damagePerSecond);
         }
     }
@@ -141,9 +142,10 @@ public class Vampirism : MonoBehaviour
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(
             transform.position,
-            _effect.transform.lossyScale.x,
+            _effect.transform.lossyScale.x / HalfReduce,
             _targetLayer);
 
+        
         _targets.Clear();
 
         foreach (var hit in hits)

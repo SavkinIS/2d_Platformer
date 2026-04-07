@@ -71,7 +71,6 @@ public class Player : MonoBehaviour
         _collector.AidKitColleted += _health.AidKitCollected;
         _health.Dead += ToDie;
         _health.Hurted += Hurted;
-        _health.HealthRestored += HealthRestored;
         _health.Changed += _healthBar.HealthChangedInternal;
         _playerAnimator.AttackDealDamage += _attacker.DealDamage;
         _playerAnimator.AttackEnded += AttackEnded;
@@ -90,7 +89,6 @@ public class Player : MonoBehaviour
         _collector.AidKitColleted -= _health.AidKitCollected;
         _health.Dead -= ToDie;
         _health.Hurted -= Hurted;
-        _health.HealthRestored -= HealthRestored;
         _health.Changed -= _healthBar.HealthChangedInternal;
         _playerAnimator.AttackDealDamage += _attacker.DealDamage;
     }
@@ -118,10 +116,6 @@ public class Player : MonoBehaviour
         _playerAnimator.Hurt();
     }
 
-    private void HealthRestored()
-    {
-        _playerState.SetState(_allBlockState);
-    }
 
     private void HurtEnded()
     {
