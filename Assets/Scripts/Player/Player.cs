@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _allBlockState = (false, false, false);
     private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _idleState = (true, true, true);
     private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _jumpsState = (true, true, false);
+    private AbilityHandler _abilityHandler;
 
     public bool IsAlive => _health.IsAlive;
     public Vampirism Vampirism => _vampirism;
@@ -30,13 +31,17 @@ public class Player : MonoBehaviour
         _playerState = new PlayerState();
         _physicsMover.SetPlayerState(_playerState);
         _wallet = new Wallet();
-        _inputHandler = new PLayerInputHandler(_physicsMover, this, _rotateTransform);
+        
+        if (_abilityHandler == null)
+            _abilityHandler = new AbilityHandler();
+        
         _physicsMover.SetGroundDetector(_groundDetector);
-        _vampirism.SetHealable(_health);
+        _inputHandler = new PLayerInputHandler(_physicsMover, this, _rotateTransform, _abilityHandler);
     }
 
     private void Start()
     {
+        
         _health.Refresh();
     }
 
@@ -120,5 +125,13 @@ public class Player : MonoBehaviour
     private void HurtEnded()
     {
         _playerState.SetState(_idleState);
+    }
+
+    public void SetAbilityView(AbilityViewUI vampirismViewUI)
+    {
+        if (_abilityHandler == null)
+            _abilityHandler = new AbilityHandler();
+        
+        _abilityHandler.Initialize(_health, _vampirism, vampirismViewUI, this);
     }
 }

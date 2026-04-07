@@ -494,11 +494,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 859f099974a324d3b83c3239050860a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damagePerSecond: 10
   _detector: {fileID: 484894453}
   _effect: {fileID: 484894454}
-  _activeTime: 6
-  _cooldownTime: 4
   _targetLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -9231,7 +9228,7 @@ MonoBehaviour:
   _gamePlayPanel: {fileID: 567035023}
   _gameOverPanel: {fileID: 50472694}
   _player: {fileID: 1375477689}
-  _vampirismButton: {fileID: 1408003879}
+  vampirismViewUI: {fileID: 1408003879}
 --- !u!1001 &791411734
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10945,7 +10942,7 @@ GameObject:
   - component: {fileID: 1408003881}
   - component: {fileID: 1408003879}
   m_Layer: 5
-  m_Name: VampirismButton
+  m_Name: VampirismVIewUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -1,16 +1,17 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CanvasHandler : MonoBehaviour
 {
     [SerializeField] private GameObject _gamePlayPanel;
     [SerializeField] private GameObject _gameOverPanel;
     [SerializeField] private Player _player;
-    [SerializeField] private AbilityButton _vampirismButton;
+    [SerializeField] private AbilityViewUI vampirismViewUI;
 
     private void Awake()
     {
         ShowGamePanel();
-        _vampirismButton.SetAbility(_player.Vampirism);
+        _player.SetAbilityView(vampirismViewUI);
     }
 
     private void OnEnable()

@@ -8,13 +8,16 @@ public class PLayerInputHandler : IDisposable
     private PlayerInput _playerInput;
     private readonly Rotator _rotator;
     private readonly Player _player;
+    private readonly AbilityHandler _abilityHandler;
 
-    public PLayerInputHandler(PhysicsMover physicsMover, Player player, Transform rotateTransform)
+    public PLayerInputHandler(PhysicsMover physicsMover, Player player, Transform rotateTransform,
+        AbilityHandler abilityHandler)
     {
         _physicsMover = physicsMover;
         _playerInput = new PlayerInput();
         _rotator = new Rotator(rotateTransform);
         _player = player;
+        _abilityHandler = abilityHandler;
     }
 
     public void Subscribe()
@@ -48,7 +51,7 @@ public class PLayerInputHandler : IDisposable
 
     private void ActivateAbility(InputAction.CallbackContext obj)
     {
-        _player.Vampirism.Activate();
+        _abilityHandler.Activate();
     }
 
     private void Attack(InputAction.CallbackContext obj)
