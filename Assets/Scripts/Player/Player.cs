@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Attacker _attacker;
     [SerializeField] private Transform _rotateTransform;
     [SerializeField] private HealthViewBase _healthBar;
+    [SerializeField] private Vampirism _vampirism;
 
     private PLayerInputHandler _inputHandler;
     private Wallet _wallet;
@@ -21,6 +22,7 @@ public class Player : MonoBehaviour
     private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _jumpsState = (true, true, false);
 
     public bool IsAlive => _health.IsAlive;
+    public Vampirism Vampirism => _vampirism;
     public event Action Dead;
 
     private void Awake()
@@ -30,6 +32,7 @@ public class Player : MonoBehaviour
         _wallet = new Wallet();
         _inputHandler = new PLayerInputHandler(_physicsMover, this, _rotateTransform);
         _physicsMover.SetGroundDetector(_groundDetector);
+        _vampirism.SetHealable(_health);
     }
 
     private void Start()
@@ -42,14 +45,14 @@ public class Player : MonoBehaviour
         var direction = _physicsMover.Direction;
         var jumping = _physicsMover.IsJumping();
 
-        if (jumping  && _playerState.IsCanJump)
+        if (jumping && _playerState.IsCanJump)
         {
             _playerAnimator.Jump(jumping);
             _playerState.SetState(_jumpsState);
         }
 
         if (jumping == false && _groundDetector.IsGrounded == false)
-        {   
+        {
             _playerAnimator.Fall(_groundDetector.IsGrounded == false);
             _playerState.SetState(_jumpsState);
         }
@@ -96,7 +99,7 @@ public class Player : MonoBehaviour
     {
         if (_playerState.IsCanAttack == false)
             return;
-        
+
         _playerAnimator.Attack();
         _playerState.SetState(_allBlockState);
     }
@@ -119,7 +122,7 @@ public class Player : MonoBehaviour
     {
         _playerState.SetState(_allBlockState);
     }
-    
+
     private void HurtEnded()
     {
         _playerState.SetState(_idleState);

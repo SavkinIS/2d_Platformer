@@ -19,6 +19,8 @@ public class Health : MonoBehaviour, IDamageable, IHealable, IHealth
     public bool IsAlive => _current > 0;
 
     public float Max => _max;
+    
+    public Transform Transform => transform;
 
     private void Awake()
     {
@@ -49,10 +51,18 @@ public class Health : MonoBehaviour, IDamageable, IHealable, IHealth
         if (aidKit == null || aidKit.HealthRestore < 0)
             return;
 
-        float newHealth = _current + aidKit.HealthRestore;
+        Heal(aidKit.HealthRestore);
+    }
+
+    public void Heal(float amount)
+    {
+        if (amount < 0)
+            return;
+
+        float newHealth = _current + amount;
         _current = Mathf.Clamp(newHealth, _current, _max);
         HealthRestored?.Invoke();
-        Changed?.Invoke(Current, Max, aidKit.HealthRestore);
+        Changed?.Invoke(Current, Max, amount);
     }
 
     private void Hurt()

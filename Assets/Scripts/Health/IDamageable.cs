@@ -1,6 +1,9 @@
+using UnityEngine;
+
 public interface IDamageable
 {
-    bool IsAlive { get;}
-    
+    bool IsAlive { get; }
+
     void TakeDamage(float damage);
+    Transform Transform { get; }
 }

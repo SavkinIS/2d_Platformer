@@ -28,6 +28,7 @@ public class PLayerInputHandler : IDisposable
         _playerInput.Player.Jump.performed += Jump;
 
         _playerInput.Player.Attack_1.performed += Attack;
+        _playerInput.Player.Ability.performed += ActivateAbility;
     }
 
     public void UnSubscribe()
@@ -40,8 +41,14 @@ public class PLayerInputHandler : IDisposable
         _playerInput.Player.Jump.performed -= Jump;
 
         _playerInput.Player.Attack_1.performed -= Attack;
+        _playerInput.Player.Ability.performed -= ActivateAbility;
 
         _playerInput.Disable();
+    }
+
+    private void ActivateAbility(InputAction.CallbackContext obj)
+    {
+        _player.Vampirism.Activate();
     }
 
     private void Attack(InputAction.CallbackContext obj)
