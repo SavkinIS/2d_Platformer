@@ -1,12 +1,12 @@
-using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AbilityViewUI : MonoBehaviour
 {
     [SerializeField] private Image _fillImage;
-    [SerializeField] private GameObject _textGo;
-    
+    [SerializeField] private TextMeshProUGUI _tooltipText;
+
     private void Awake()
     {
         _fillImage.type = Image.Type.Filled;
@@ -17,23 +17,40 @@ public class AbilityViewUI : MonoBehaviour
     {
         _fillImage.fillAmount = current / max;
     }
-    
-    public void EnableTooltip()
+
+    public void Activated()
     {
-        _textGo.SetActive(true);
+        DisableTooltip();
+        DisableProgress();
     }
 
-    public void DisableTooltip()
+    public void Deactivated()
     {
-        _textGo.SetActive(false);
+        EnableProgress();
     }
-    
-    public void EnableProgress()
+
+    public void Enabled()
+    {
+        EnableTooltip();
+        EnableProgress();
+    }
+
+    private void EnableTooltip()
+    {
+        _tooltipText.gameObject.SetActive(true);
+    }
+
+    private void DisableTooltip()
+    {
+        _tooltipText.gameObject.SetActive(false);
+    }
+
+    private void EnableProgress()
     {
         _fillImage.gameObject.SetActive(true);
     }
-    
-    public void DisableProgress()
+
+    private void DisableProgress()
     {
         _fillImage.gameObject.SetActive(false);
     }

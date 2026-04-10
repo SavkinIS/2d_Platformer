@@ -1,28 +1,28 @@
+using System;
 using System.Collections;
+using Ability.Effects;
 using UnityEngine;
 
-public class AbilityHandler
+public class AbilityHandler : MonoBehaviour
 {
     private const int SecondStep = 1;
-
-    private Vampirism _vampirism;
-    private AbilityViewUI _viewUI;
-    private MonoBehaviour _coroutineBehaviour;
-
-    private float _activeTime = 6f;
-    private float _cooldownTime = 4f;
+    
+    [SerializeField] private Vampirism _vampirism;
+    [SerializeField] private float _activeTime = 6f;
+    [SerializeField] private float _cooldownTime = 4f;
+    
     private WaitForSeconds _waitingOneSecond;
-
     private Collider2D[] _hits;
     private Coroutine _abilityCoroutine;
+    
+    public event Action Activated;
+    public event Action Enabled;
+    public event Action Deactivated;
+    public event Action<float, float> CooldownChanged;
 
-    public void Initialize(IHealable healable, Vampirism vampirism, AbilityViewUI viewUI,
-        MonoBehaviour coroutineBehaviour)
+    public void Initialize(IHealable healable)
     {
-        _vampirism = vampirism;
-        _viewUI = viewUI;
         _waitingOneSecond = new WaitForSeconds(SecondStep);
-        _coroutineBehaviour = coroutineBehaviour;
         _vampirism.SetHealable(healable);
         Enable();
     }
@@ -32,17 +32,14 @@ public class AbilityHandler
         if (_abilityCoroutine == null)
         {
             _vampirism.Activate();
-            _vampirism.FindTargets();
-            _viewUI.DisableTooltip();
-            _viewUI.DisableProgress();
-            _abilityCoroutine = _coroutineBehaviour.StartCoroutine(AbilityCoroutine());
+            Activated?.Invoke();
+            _abilityCoroutine = StartCoroutine(AbilityCoroutine());
         }
     }
 
     private IEnumerator AbilityCoroutine()
     {
         yield return StartExecuteCoroutine();
-
         yield return TimerCoroutine();
     }
 
@@ -67,7 +64,7 @@ public class AbilityHandler
         while (elapsedTime <= _cooldownTime)
         {
             elapsedTime += Time.deltaTime;
-            _viewUI.ChangeCooldown(elapsedTime, _cooldownTime);
+            CooldownChanged?.Invoke(elapsedTime, _cooldownTime);
             yield return null;
         }
 
@@ -76,15 +73,13 @@ public class AbilityHandler
 
     private void Enable()
     {
-        _viewUI.EnableTooltip();
-        _viewUI.EnableProgress();
+        Enabled?.Invoke();
         _abilityCoroutine = null;
     }
 
     private void Deactivate()
     {
-        _viewUI.EnableProgress();
-        _viewUI.ChangeCooldown(0, _cooldownTime);
-        _vampirism.Deactivate();
+        Deactivated?.Invoke();
+        CooldownChanged?.Invoke(0, _cooldownTime);
     }
 }

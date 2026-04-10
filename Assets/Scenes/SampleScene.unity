@@ -459,6 +459,7 @@ GameObject:
   m_Component:
   - component: {fileID: 199027969}
   - component: {fileID: 199027970}
+  - component: {fileID: 199027971}
   m_Layer: 8
   m_Name: VampirismAbility
   m_TagString: Untagged
@@ -494,11 +495,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 859f099974a324d3b83c3239050860a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _detector: {fileID: 484894453}
-  _effect: {fileID: 484894454}
+  _damagePerSecond: 10
   _targetLayer:
     serializedVersion: 2
     m_Bits: 128
+  _abilityRadius: 2
+--- !u!114 &199027971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199027968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7559bacb79b24f4484635b472a903ec8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _vampirism: {fileID: 199027970}
+  _activeTime: 6
+  _cooldownTime: 4
 --- !u!1 &223764748
 GameObject:
   m_ObjectHideFlags: 0
@@ -1114,8 +1130,8 @@ GameObject:
   m_Component:
   - component: {fileID: 484894451}
   - component: {fileID: 484894454}
-  - component: {fileID: 484894453}
   - component: {fileID: 484894452}
+  - component: {fileID: 484894455}
   m_Layer: 8
   m_Name: Effect
   m_TagString: Untagged
@@ -1173,18 +1189,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1}
   m_Direction: 0
---- !u!114 &484894453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 484894450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fcabf0fc4a240cab336751e7570a1d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &484894454
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1225,7 +1229,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 0.8018868, g: 0.2004717, b: 0.2004717, a: 0.5882353}
   m_FlipX: 0
@@ -1237,6 +1241,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &484894455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 484894450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da9c28c0a1e348ea92b70f118627385d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _abilityHandler: {fileID: 199027971}
+  _renderer: {fileID: 484894454}
 --- !u!1 &504168452
 GameObject:
   m_ObjectHideFlags: 0
@@ -10215,17 +10233,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1398154035623081227, guid: f94c628ac41fe4747afe377b4ae17e11, type: 3}
   m_PrefabInstance: {fileID: 1176859582}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1197416891 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4388437711169017707, guid: dd7139c9d1524490e8ae8eafd2053b0d, type: 3}
-  m_PrefabInstance: {fileID: 3736261984415419907}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bd9cdfae55948ebaff3a7a5ebd81ee0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1211953045
 GameObject:
   m_ObjectHideFlags: 0
@@ -10790,8 +10797,7 @@ MonoBehaviour:
   _health: {fileID: 1375477691}
   _attacker: {fileID: 1680723426}
   _rotateTransform: {fileID: 1716335079}
-  _healthBar: {fileID: 1197416891}
-  _vampirism: {fileID: 199027970}
+  _abilityHandler: {fileID: 199027971}
 --- !u!114 &1375477691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10982,7 +10988,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _fillImage: {fileID: 1958911094}
-  _textGo: {fileID: 843618511}
+  _tooltipText: {fileID: 843618513}
 --- !u!114 &1408003881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12932,6 +12938,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4388437711169017707, guid: dd7139c9d1524490e8ae8eafd2053b0d, type: 3}
+      propertyPath: _health
+      value: 
+      objectReference: {fileID: 1375477691}
     - target: {fileID: 8126433018307730250, guid: dd7139c9d1524490e8ae8eafd2053b0d, type: 3}
       propertyPath: m_Camera
       value: 

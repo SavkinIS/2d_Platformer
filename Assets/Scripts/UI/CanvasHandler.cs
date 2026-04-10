@@ -11,17 +11,24 @@ public class CanvasHandler : MonoBehaviour
     private void Awake()
     {
         ShowGamePanel();
-        _player.SetAbilityView(vampirismViewUI);
     }
 
     private void OnEnable()
     {
         _player.Dead += ShowGameOverPanel;
+        _player.AbilityHandler.Activated += vampirismViewUI.Activated;
+        _player.AbilityHandler.Deactivated += vampirismViewUI.Deactivated;
+        _player.AbilityHandler.Enabled += vampirismViewUI.Enabled;
+        _player.AbilityHandler.CooldownChanged += vampirismViewUI.ChangeCooldown;
     }
 
     private void OnDisable()
     {
         _player.Dead -= ShowGameOverPanel;
+        _player.AbilityHandler.Activated -= vampirismViewUI.Activated;
+        _player.AbilityHandler.Deactivated -= vampirismViewUI.Deactivated;
+        _player.AbilityHandler.Enabled -= vampirismViewUI.Enabled;
+        _player.AbilityHandler.CooldownChanged += vampirismViewUI.ChangeCooldown;
     }
     
     private void ShowGameOverPanel()

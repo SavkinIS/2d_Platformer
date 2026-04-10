@@ -27,14 +27,25 @@ public class Health : MonoBehaviour, IDamageable, IHealable, IHealth
         _current = _max;
     }
 
-    public void TakeDamage(float damage, bool withAnimation = true)
+    private void Start()
     {
-        if (damage < 0)
-            return;
+        Refresh();
+    }
 
+    public float TakeDamage(float damage, bool withAnimation = true)
+    {
+        
+        if (damage < 0)
+        {
+            return 0f;
+        }
+
+        float damageTaken = damage;
         float previous = _current;
+
         _current = Math.Clamp(_current - damage, _min, _max);
-        Refresh(previous - _current);
+        damageTaken = previous - _current;
+        Refresh(damageTaken);
 
         if (_current <= 0)
         {
@@ -45,6 +56,8 @@ public class Health : MonoBehaviour, IDamageable, IHealable, IHealth
             if (withAnimation)
                 Hurt();
         }
+
+        return damageTaken;
     }
 
     public void AidKitCollected(AidKit aidKit)

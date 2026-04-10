@@ -5,12 +5,9 @@ using UnityEngine;
 
 public class Vampirism : MonoBehaviour
 {
-    private const int HalfReduce = 2;
-
-    [SerializeField] private TriggerDetector _detector;
-    [SerializeField] private SpriteRenderer _effect;
     [SerializeField] private float _damagePerSecond = 10;
     [SerializeField] private LayerMask _targetLayer;
+    [SerializeField] private float _abilityRadius = 0.92f;
 
     private List<IDamageable> _targets = new List<IDamageable>();
     private IDamageable _target;
@@ -18,31 +15,15 @@ public class Vampirism : MonoBehaviour
     private IHealable _healable;
     private float _givenDamage;
 
-    private void Awake()
-    {
-        _effect.enabled = false;
-    }
-
-    private void OnEnable()
-    {
-        _detector.TriggerEntered += AddTarget;
-        _detector.TriggerExited += RemoveTarget;
-    }
-
-    private void OnDisable()
-    {
-        _detector.TriggerEntered -= AddTarget;
-        _detector.TriggerExited -= RemoveTarget;
-    }
-
     public void Execute(float delta)
-    {
+    { 
+        FindTargets();
         FindClosestTarget();
         
         if (_target != null)
         {
-            _target.TakeDamage(_damagePerSecond * delta, false);
-            _healable.Heal(_damagePerSecond * delta);
+            float damageTaken =  _target.TakeDamage(_damagePerSecond * delta, false);
+            _healable.Heal(damageTaken);
 
             if (_target.IsAlive == false)
             {
@@ -54,12 +35,6 @@ public class Vampirism : MonoBehaviour
     public void Activate()
     {
         _givenDamage = 0;
-        _effect.enabled = true;
-    }
-
-    public void Deactivate()
-    {
-        _effect.enabled = false;
     }
 
     public void SetHealable(IHealable healable)
@@ -67,11 +42,11 @@ public class Vampirism : MonoBehaviour
         _healable = healable;
     }
     
-    public void FindTargets()
+    private void FindTargets()
     {
         _hits = Physics2D.OverlapCircleAll(
             transform.position,
-            _effect.transform.lossyScale.x / HalfReduce,
+            _abilityRadius,
             _targetLayer);
 
         _targets.Clear();
@@ -83,16 +58,6 @@ public class Vampirism : MonoBehaviour
                 _targets.Add(damageable);
             }
         }
-    }
-    
-    private void AddTarget(Collider2D collider)
-    {
-        FindTargets();
-    }
-
-    private void RemoveTarget(Collider2D collider)
-    {
-        FindTargets();
     }
 
     private void FindClosestTarget()

@@ -10,8 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Health _health;
     [SerializeField] private Attacker _attacker;
     [SerializeField] private Transform _rotateTransform;
-    [SerializeField] private HealthViewBase _healthBar;
-    [SerializeField] private Vampirism _vampirism;
+    [SerializeField] private AbilityHandler _abilityHandler;
 
     private PLayerInputHandler _inputHandler;
     private Wallet _wallet;
@@ -20,23 +19,32 @@ public class Player : MonoBehaviour
     private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _allBlockState = (false, false, false);
     private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _idleState = (true, true, true);
     private readonly (bool IsCanMove, bool IsCanJump, bool IsCanAttack) _jumpsState = (true, true, false);
-    private AbilityHandler _abilityHandler;
 
-    public bool IsAlive => _health.IsAlive;
-    public Vampirism Vampirism => _vampirism;
     public event Action Dead;
+    
+    public bool IsAlive => _health.IsAlive;
+    public AbilityHandler AbilityHandler => _abilityHandler;
 
     private void Awake()
     {
         _playerState = new PlayerState();
         _physicsMover.SetPlayerState(_playerState);
         _wallet = new Wallet();
-        
-        if (_abilityHandler == null)
-            _abilityHandler = new AbilityHandler();
-        
+        _abilityHandler.Initialize(_health);
         _physicsMover.SetGroundDetector(_groundDetector);
         _inputHandler = new PLayerInputHandler(_physicsMover, this, _rotateTransform, _abilityHandler);
+    }
+    
+    private void OnEnable()
+    {
+        _inputHandler.Subscribe();
+        _collector.GemColleted += _wallet.IncrementGemCount;
+        _collector.AidKitColleted += _health.AidKitCollected;
+        _health.Dead += ToDie;
+        _health.Hurted += Hurted;
+        _playerAnimator.AttackDealDamage += _attacker.DealDamage;
+        _playerAnimator.AttackEnded += AttackEnded;
+        _playerAnimator.HurtAnimationEnded += HurtEnded;
     }
 
     private void Start()
@@ -69,24 +77,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        _inputHandler.Subscribe();
-        _collector.GemColleted += _wallet.IncrementGemCount;
-        _collector.AidKitColleted += _health.AidKitCollected;
-        _health.Dead += ToDie;
-        _health.Hurted += Hurted;
-        _health.Changed += _healthBar.HealthChangedInternal;
-        _playerAnimator.AttackDealDamage += _attacker.DealDamage;
-        _playerAnimator.AttackEnded += AttackEnded;
-        _playerAnimator.HurtAnimationEnded += HurtEnded;
-    }
-
-    private void AttackEnded()
-    {
-        _playerState.SetState(_idleState);
-    }
-
     private void OnDisable()
     {
         _inputHandler.UnSubscribe();
@@ -94,10 +84,9 @@ public class Player : MonoBehaviour
         _collector.AidKitColleted -= _health.AidKitCollected;
         _health.Dead -= ToDie;
         _health.Hurted -= Hurted;
-        _health.Changed -= _healthBar.HealthChangedInternal;
         _playerAnimator.AttackDealDamage += _attacker.DealDamage;
     }
-
+    
     public void Attack()
     {
         if (_playerState.IsCanAttack == false)
@@ -105,6 +94,11 @@ public class Player : MonoBehaviour
 
         _playerAnimator.Attack();
         _playerState.SetState(_allBlockState);
+    }
+    
+    private void AttackEnded()
+    {
+        _playerState.SetState(_idleState);
     }
 
     private void ToDie()
@@ -121,17 +115,8 @@ public class Player : MonoBehaviour
         _playerAnimator.Hurt();
     }
 
-
     private void HurtEnded()
     {
         _playerState.SetState(_idleState);
-    }
-
-    public void SetAbilityView(AbilityViewUI vampirismViewUI)
-    {
-        if (_abilityHandler == null)
-            _abilityHandler = new AbilityHandler();
-        
-        _abilityHandler.Initialize(_health, _vampirism, vampirismViewUI, this);
     }
 }

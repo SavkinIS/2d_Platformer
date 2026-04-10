@@ -648,6 +648,10 @@ PrefabInstance:
       propertyPath: _speed
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4388437711169017707, guid: dd7139c9d1524490e8ae8eafd2053b0d, type: 3}
+      propertyPath: _health
+      value: 
+      objectReference: {fileID: 2355042586291570385}
     - target: {fileID: 8725949239944198139, guid: dd7139c9d1524490e8ae8eafd2053b0d, type: 3}
       propertyPath: m_Name
       value: Canvas

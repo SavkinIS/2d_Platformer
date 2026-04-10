@@ -1,12 +1,24 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public class HealthSmoothBarView : HealthBarView
 {
     [SerializeField] private float _speed = 0.3f;
+    [SerializeField] private Health _health;
 
     private float _targetValue;
     private Coroutine _fillCoroutine;
+    
+    private void OnEnable()
+    {
+        _health.Changed += HealthChangedInternal;
+    }
+
+    private void OnDisable()
+    {
+        _health.Changed -= HealthChangedInternal;
+    }
 
     protected override void HealthChanged(float current, float max, float normalized)
     {
